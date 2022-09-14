@@ -25,7 +25,7 @@ def kalign_task(
     out_dir = f"kalign_{curr_timestamp}"
     os.system(command=f"mkdir -p {out_dir}")
     message("info", {"title": f"Output Directory: {out_dir}", "body": f"Output will be saved to {out_dir} directory."})
-    
+
     os.system(command=f"kalign -i {seqs.local_path} --format fasta -o kalign_out.afa")
     
     return LatchDir(path=str(out_dir), remote_path=f"latch:///{out_dir}/")
@@ -44,8 +44,8 @@ metadata = LatchMetadata(
     license="MIT",
     parameters={
         "seqs": LatchParameter(
-            display_name="Input Fasta",
-            description="Concatenated fasta file containing all the sequences to be aligned",
+            display_name="DNA Input Fasta",
+            description="Concatenated fasta file containing all the DNA sequences to be aligned",
             batch_table_column=False,
         )
     },
@@ -63,7 +63,7 @@ def kalign(
     [Kalign](https://github.com/TimoLassmann/kalign) is a fast multiple sequence alignment program for biological sequences.
 
     ## Input Options
-    1. **Required**: A concatenated `fasta file` containing all the sequences to be aligned.
+    1. **Required**: A concatenated `fasta file` containing all the DNA sequences to be aligned.
     2. *Optional*: `output format`, `gap open penalty`, `gap extension penalty` and `terminal gap penalties`.
 
     ## Please cite:
@@ -77,6 +77,6 @@ LaunchPlan(
     kalign,
     "Test Data",
     {
-        "seqs": LatchFile("s3://latch-public/test-data/3729/kalign_data.fasta"),
+        "seqs": LatchFile("s3://latch-public/test-data/3729/kalign_seq.fasta"),
     },
 )
