@@ -1,5 +1,5 @@
-# Kalign
-[Kalign](https://github.com/TimoLassmann/kalign) is a fast multiple sequence alignment program for biological sequences.
+# Kalign3
+[Kalign3](https://github.com/TimoLassmann/kalign) is a fast multiple sequence alignment program for biological sequences.
 
 ## How to Access
 Click Here: [https://console.latch.bio/explore/81603/info](https://console.latch.bio/explore/81603/info)
