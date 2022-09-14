@@ -6,7 +6,7 @@ from pathlib import Path
 from enum import Enum
 import os
 
-from latch import small_task, workflow, message
+from latch import large_task, workflow, message
 from latch.resources.launch_plan import LaunchPlan
 from latch.types import LatchAuthor, LatchFile, LatchMetadata, LatchParameter, LatchDir
 
@@ -17,7 +17,7 @@ class OutputFormat(Enum):
     msf = "MSF"
 
 
-@small_task
+@large_task
 def kalign_task(
     seqs: LatchFile,
     format: OutputFormat,

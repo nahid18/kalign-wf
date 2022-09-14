@@ -2,7 +2,7 @@
 [Kalign](https://github.com/TimoLassmann/kalign) is a fast multiple sequence alignment program for biological sequences.
 
 ## How to Access
-Click Here: [https://console.latch.bio/explore/81602/info](https://console.latch.bio/explore/81602/info)
+Click Here: [https://console.latch.bio/explore/81603/info](https://console.latch.bio/explore/81603/info)
 
 ## Input Options
 1. Fasta File: A concatenated `fasta file` containing all the sequences to be aligned.
