@@ -6,18 +6,6 @@ RUN curl https://codeload.github.com/TimoLassmann/kalign/tar.gz/refs/tags/v3.3.2
 
 RUN cd kalign-3.3.2 && ./autogen.sh && ./configure && make && make check && make install
 
-# Get miniconda
-# RUN curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
-# ENV CONDA_DIR /opt/conda
-# RUN bash miniconda.sh -b -p /opt/conda
-# ENV PATH=$CONDA_DIR/bin:$PATH
-
-# Get Mamba
-# RUN conda install mamba -n base -c conda-forge
-
-# Get Kalign3
-# RUN mamba install -y -c bioconda kalign3=3.2.2
-
 RUN python3 -m pip install --upgrade latch
 COPY wf /root/wf
 ARG tag

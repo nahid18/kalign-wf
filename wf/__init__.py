@@ -20,7 +20,7 @@ class OutputFormat(Enum):
 @small_task
 def kalign_task(
     seqs: LatchFile,
-    outfmt: str,
+    format: OutputFormat,
 ) -> LatchDir:
     def get_timestamp():
         format_str = "%d %b %Y %H:%M:%S %p"
@@ -31,6 +31,13 @@ def kalign_task(
     out_dir = f"kalign_{curr_timestamp}"
     os.system(command=f"mkdir -p {out_dir}")
     message("info", {"title": f"Output Directory: {out_dir}", "body": f"Output will be saved to {out_dir} directory."})
+    
+    if format is OutputFormat.fasta:
+        outfmt = "fasta"
+    elif format is OutputFormat.clu:
+        outfmt = "clu"
+    elif format is OutputFormat.msf:
+        outfmt = "msf"
     
     out_file = f"{out_dir}/kalign_aligned_out.{outfmt.lower()}"
     os.system(command=f"kalign -i {seqs.local_path} --format {outfmt} -o {out_file}")
@@ -47,7 +54,7 @@ metadata = LatchMetadata(
         email="abdnahid56@gmail.com",
         github="github.com/nahid18",
     ),
-    repository="https://github.com/TimoLassmann/kalign",
+    repository="https://github.com/nahid18/kalign-wf",
     license="MIT",
     parameters={
         "seqs": LatchParameter(
@@ -67,7 +74,7 @@ metadata = LatchMetadata(
 @workflow(metadata)
 def kalign(
     seqs: LatchFile,
-    format: OutputFormat = OutputFormat.fasta
+    format: OutputFormat = OutputFormat.clu,
 ) -> LatchDir:
     """A fast multiple sequence alignment program
 
@@ -82,16 +89,8 @@ def kalign(
 
     ## Please cite:
     1. Lassmann, Timo. _Kalign 3: multiple sequence alignment of large data sets._ **Bioinformatics** (2019). [pdf](https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btz795/30314127/btz795.pdf)
-    """
-    
-    if format == OutputFormat.fasta:
-        outfmt = "fasta"
-    elif format == OutputFormat.clu:
-        outfmt = "clu"
-    elif format == OutputFormat.msf:
-        outfmt = "msf"
-    
-    return kalign_task(seqs=seqs, outfmt=outfmt)
+    """    
+    return kalign_task(seqs=seqs, format=format)
 
 
 # Test Data
@@ -100,6 +99,6 @@ LaunchPlan(
     "Test Data",
     {
         "seqs": LatchFile("s3://latch-public/test-data/3729/kalign_seq.fasta"),
-        "format": OutputFormat.fasta,
+        "format": OutputFormat.clu,
     },
 )
