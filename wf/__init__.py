@@ -3,7 +3,7 @@ Fast Multiple Sequence Alignment
 """
 from datetime import datetime
 from pathlib import Path
-import subprocess
+from enum import Enum
 import os
 
 from latch import small_task, workflow, message
@@ -11,10 +11,16 @@ from latch.resources.launch_plan import LaunchPlan
 from latch.types import LatchAuthor, LatchFile, LatchMetadata, LatchParameter, LatchDir
 
 
+class OutputFormat(Enum):
+    fasta = "FASTA"
+    clu = "CLUSTAL"
+    msf = "MSF"
+
 
 @small_task
 def kalign_task(
     seqs: LatchFile,
+    outfmt: str,
 ) -> LatchDir:
     def get_timestamp():
         format_str = "%d %b %Y %H:%M:%S %p"
@@ -25,8 +31,9 @@ def kalign_task(
     out_dir = f"kalign_{curr_timestamp}"
     os.system(command=f"mkdir -p {out_dir}")
     message("info", {"title": f"Output Directory: {out_dir}", "body": f"Output will be saved to {out_dir} directory."})
-
-    os.system(command=f"kalign -i {seqs.local_path} --format fasta -o {out_dir}/kalign_out.afa")
+    
+    out_file = f"{out_dir}/kalign_aligned_out.{outfmt.lower()}"
+    os.system(command=f"kalign -i {seqs.local_path} --format {outfmt} -o {out_file}")
     
     return LatchDir(path=str(out_dir), remote_path=f"latch:///{out_dir}/")
 
@@ -40,14 +47,19 @@ metadata = LatchMetadata(
         email="abdnahid56@gmail.com",
         github="github.com/nahid18",
     ),
-    repository="",
+    repository="https://github.com/TimoLassmann/kalign",
     license="MIT",
     parameters={
         "seqs": LatchParameter(
-            display_name="DNA Input Fasta",
-            description="Concatenated fasta file containing all the DNA sequences to be aligned",
+            display_name="Input Fasta",
+            description="Concatenated fasta file containing all the sequences to be aligned",
             batch_table_column=False,
-        )
+        ),
+        "format": LatchParameter(
+            display_name="Output Format",
+            description="Output format of the alignment",
+            batch_table_column=False,
+        ),
     },
 )
 
@@ -55,6 +67,7 @@ metadata = LatchMetadata(
 @workflow(metadata)
 def kalign(
     seqs: LatchFile,
+    format: OutputFormat = OutputFormat.fasta
 ) -> LatchDir:
     """A fast multiple sequence alignment program
 
@@ -63,13 +76,22 @@ def kalign(
     [Kalign](https://github.com/TimoLassmann/kalign) is a fast multiple sequence alignment program for biological sequences.
 
     ## Input Options
-    1. **Required**: A concatenated `fasta file` containing all the DNA sequences to be aligned.
+    1. Fasta File: A concatenated `fasta file` containing all the sequences to be aligned.
+    2. Output Format: The output format of the alignment. Default is `fasta`.
     2. *Optional*: `output format`, `gap open penalty`, `gap extension penalty` and `terminal gap penalties`.
 
     ## Please cite:
     1. Lassmann, Timo. _Kalign 3: multiple sequence alignment of large data sets._ **Bioinformatics** (2019). [pdf](https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btz795/30314127/btz795.pdf)
     """
-    return kalign_task(seqs=seqs)
+    
+    if format == OutputFormat.fasta:
+        outfmt = "fasta"
+    elif format == OutputFormat.clu:
+        outfmt = "clu"
+    elif format == OutputFormat.msf:
+        outfmt = "msf"
+    
+    return kalign_task(seqs=seqs, outfmt=outfmt)
 
 
 # Test Data
@@ -78,5 +100,6 @@ LaunchPlan(
     "Test Data",
     {
         "seqs": LatchFile("s3://latch-public/test-data/3729/kalign_seq.fasta"),
+        "format": OutputFormat.fasta,
     },
 )

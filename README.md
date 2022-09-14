@@ -5,7 +5,8 @@
 Click Here: 
 
 ## Input Options
-1. **Required**: A concatenated `fasta file` containing all the DNA sequences to be aligned.
+1. Fasta File: A concatenated `fasta file` containing all the sequences to be aligned.
+2. Output Format: The output format of the alignment. Default is `fasta`.
 2. *Optional*: `output format`, `gap open penalty`, `gap extension penalty` and `terminal gap penalties`.
 
 ## Benchmark results
