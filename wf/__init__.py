@@ -15,9 +15,6 @@ from latch.types import LatchAuthor, LatchFile, LatchMetadata, LatchParameter, L
 @small_task
 def kalign_task(
     seqs: LatchFile,
-    gpo: int,
-    gpe: int,
-    tgpe: int,
 ) -> LatchDir:
     def get_timestamp():
         format_str = "%d %b %Y %H:%M:%S %p"
@@ -29,7 +26,7 @@ def kalign_task(
     os.system(command=f"mkdir -p {out_dir}")
     message("info", {"title": f"Output Directory: {out_dir}", "body": f"Output will be saved to {out_dir} directory."})
     
-    os.system(command=f"kalign --version > {out_dir}/version.txt")
+    os.system(command=f"kalign -i {seqs.local_path} --format fasta -o kalign_out.afa")
     
     return LatchDir(path=str(out_dir), remote_path=f"latch:///{out_dir}/")
 
@@ -50,21 +47,6 @@ metadata = LatchMetadata(
             display_name="Input Fasta",
             description="Concatenated fasta file containing all the sequences to be aligned",
             batch_table_column=False,
-        ),
-        "gpo": LatchParameter(
-            display_name="Gap Open Penalty",
-            description="Gap Open Penalty",
-            batch_table_column=False,
-        ),
-        "gpe": LatchParameter(
-            display_name="Gap Extension Penalty",
-            description="Gap Extension Penalty",
-            batch_table_column=False,
-        ),
-        "tgpe": LatchParameter(
-            display_name="Terminal Gap Penalties",
-            description="Terminal Gap Penalties",
-            batch_table_column=False,
         )
     },
 )
@@ -73,9 +55,6 @@ metadata = LatchMetadata(
 @workflow(metadata)
 def kalign(
     seqs: LatchFile,
-    gpo: int = 11,
-    gpe: int = 4,
-    tgpe: int = 2,
 ) -> LatchDir:
     """A fast multiple sequence alignment program
 
@@ -90,7 +69,7 @@ def kalign(
     ## Please cite:
     1. Lassmann, Timo. _Kalign 3: multiple sequence alignment of large data sets._ **Bioinformatics** (2019). [pdf](https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btz795/30314127/btz795.pdf)
     """
-    return kalign_task(seqs=seqs, gpo=gpo, gpe=gpe, tgpe=tgpe)
+    return kalign_task(seqs=seqs)
 
 
 # Test Data
@@ -99,8 +78,5 @@ LaunchPlan(
     "Test Data",
     {
         "seqs": LatchFile("s3://latch-public/test-data/3729/kalign_data.fasta"),
-        "gpo": 11,
-        "gpe": 4,
-        "tgpe": 2,
     },
 )
