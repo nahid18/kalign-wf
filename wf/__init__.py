@@ -26,7 +26,7 @@ def kalign_task(
     os.system(command=f"mkdir -p {out_dir}")
     message("info", {"title": f"Output Directory: {out_dir}", "body": f"Output will be saved to {out_dir} directory."})
 
-    os.system(command=f"kalign -i {seqs.local_path} --format fasta -o kalign_out.afa")
+    os.system(command=f"kalign -i {seqs.local_path} --format fasta -o {out_dir}/kalign_out.afa")
     
     return LatchDir(path=str(out_dir), remote_path=f"latch:///{out_dir}/")
 
